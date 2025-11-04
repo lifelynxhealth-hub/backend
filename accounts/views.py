@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework.response import Response
 from rest_framework import status, generics
-from .serializers import RegisterSerializer, LoginSerializer
+from .serializers import RegisterSerializer, LoginSerializer, ForgotPasswordSerializer, ResetPasswordSerializer
 from .models import User
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate
@@ -58,3 +58,23 @@ class VerifyEmailView(APIView):
                 return Response({'message': 'Email already verified.'}, status=status.HTTP_200_OK)
         except Exception:
             return Response({'error': 'Invalid or expired token.'}, status=status.HTTP_400_BAD_REQUEST)
+
+class ForgotPasswordView(APIView):
+    def post(self, request):
+        serializer = ForgotPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            {"message": "Password reset link sent! Please check your email."},
+            status=status.HTTP_200_OK,
+        )
+
+class ResetPasswordView(APIView):
+    def post(self, request):
+        serializer = ResetPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            {"message": "Password reset successful! You can now log in."},
+            status=status.HTTP_200_OK,
+        )

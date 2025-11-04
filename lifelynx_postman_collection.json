@@ -1,0 +1,72 @@
+{
+  "info": {
+    "name": "LifeLynx API - Auth",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Authentication endpoints. Variables: {{base_url}} (default http://localhost:8000), {{frontend_url}} (default http://localhost:3000)."
+  },
+  "item": [
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{base_url}}/api/auth/register/", "host": ["{{base_url}}"], "path": ["api","auth","register",""] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"full_name\": \"Jane Doe\",\n  \"email\": \"jane@example.com\",\n  \"phone_number\": \"0123456789\",\n  \"password\": \"Secret123!\",\n  \"confirm_password\": \"Secret123!\",\n  \"agree_terms\": true\n}"
+        }
+      }
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{base_url}}/api/auth/login/", "host": ["{{base_url}}"], "path": ["api","auth","login",""] },
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"jane@example.com\",\n  \"password\": \"Secret123!\"\n}" }
+      }
+    },
+    {
+      "name": "Token Refresh",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{base_url}}/api/auth/token/refresh/", "host": ["{{base_url}}"], "path": ["api","auth","token","refresh",""] },
+        "body": { "mode": "raw", "raw": "{\n  \"refresh\": \"<refresh_token>\"\n}" }
+      }
+    },
+    {
+      "name": "Verify Email (backend)",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{base_url}}/api/auth/verify-email/?token=<token>", "host": ["{{base_url}}"], "path": ["api","auth","verify-email",""], "query": [{ "key": "token", "value": "<token>" }] }
+      },
+      "description": "Frontend should extract token from URL param and call this endpoint to activate account."
+    },
+    {
+      "name": "Forgot Password",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{base_url}}/api/auth/forgot-password/", "host": ["{{base_url}}"], "path": ["api","auth","forgot-password",""] },
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"jane@example.com\"\n}" }
+      }
+    },
+    {
+      "name": "Reset Password",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{base_url}}/api/auth/reset-password/", "host": ["{{base_url}}"], "path": ["api","auth","reset-password",""] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"token\": \"<token-from-email>\",\n  \"new_password\": \"NewSecret123!\",\n  \"confirm_password\": \"NewSecret123!\"\n}"
+        }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000" },
+    { "key": "frontend_url", "value": "http://localhost:3000" }
+  ]
+}
