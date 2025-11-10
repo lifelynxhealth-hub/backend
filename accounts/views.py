@@ -53,7 +53,12 @@ class VerifyEmailView(APIView):
             if not user.is_active:
                 user.is_active = True
                 user.save()
-                return Response({'message': 'Email verified successfully.'}, status=status.HTTP_200_OK)
+                refresh = RefreshToken.for_user(user)
+                return Response({
+                    'message': 'Email verified successfully.',
+                    'access': str(refresh.access_token),
+                    'refresh': str(refresh),
+                }, status=status.HTTP_200_OK)
             else:
                 return Response({'message': 'Email already verified.'}, status=status.HTTP_200_OK)
         except Exception:
