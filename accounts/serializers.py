@@ -29,13 +29,20 @@ class RegisterSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
+        user_type = self.context.get('user_type', 'patient')
         validated_data.pop('confirm_password')
         validated_data.pop('agree_terms')
         validated_data['email'] = validated_data['email'].strip().lower()
 
         user = User.objects.create_user(**validated_data)
-        user.is_hospital = False
-        user.is_patient = True
+
+        if user_type == 'hospital':
+            user.is_hospital = True
+            user.is_patient = False
+        else:
+            user.is_hospital = False
+            user.is_patient = True
+
         user.is_active = False
         user.save()
 
@@ -44,7 +51,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         verify_url = f"{settings.FRONTEND_URL}/verify-email?token={token}"
 
-        subject = "LifeLynx: Verify your email address"
+        subject = "Lifelynx: Verify your email address"
         html_content = render_to_string("email/verify_email.html", {
             "full_name": user.full_name,
             "verify_url": verify_url,
@@ -54,7 +61,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         text_content = f"""
         Hi {user.full_name},
 
-        Welcome to LifeLynx! Please verify your email by clicking the link below:
+        Welcome to Lifelynx! Please verify your email by clicking the link below:
         {verify_url}
 
         If you didn't register for this account, you can safely ignore this email.
@@ -113,7 +120,7 @@ class ForgotPasswordSerializer(serializers.Serializer):
 
         reset_url = f"{settings.FRONTEND_URL}/reset-password?token={token}"
 
-        subject = "LifeLynx: Reset your password"
+        subject = "Lifelynx: Reset your password"
         html_content = render_to_string("email/reset_password.html", {
             "full_name": user.full_name,
             "reset_url": reset_url,

@@ -1,9 +1,10 @@
 from django.urls import path
 
-from .views import HealthProfileView, HealthMetricView, AppointmentView
+from .views import HealthProfileView, HealthMetricView, AppointmentView, DashboardView
 
 urlpatterns = [
     path('onboarding/', HealthProfileView.as_view(), name='user_onboarding'),
     path('metrics/', HealthMetricView.as_view(), name='health_metrics'),
     path('appointments/', AppointmentView.as_view(), name='appointments'),
+    path('dashboard/', DashboardView.as_view(), name='dashboard'),
 ]

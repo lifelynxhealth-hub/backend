@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.pagination import PageNumberPagination
+from rest_framework.exceptions import PermissionDenied
 from .pagination import StandardResultsSetPagination
 
 from .models import HealthProfile, HealthMetric, Appointment, ChatSession
@@ -15,7 +15,10 @@ class HealthProfileView(generics.RetrieveUpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        profile, created = HealthProfile.objects.get_or_create(user=self.request.user)
+        user = self.request.user
+        if not user.is_patient:
+            raise PermissionDenied("Only patients can have a health profile.")
+        profile, created = HealthProfile.objects.get_or_create(user=user)
         return profile
 
 class HealthMetricView(generics.GenericAPIView):
@@ -73,7 +76,7 @@ class AppointmentView(generics.GenericAPIView):
             "data": serializer.data
         }, status=status.HTTP_201_CREATED)
 
-class DashboardAPIView(APIView):
+class DashboardView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
