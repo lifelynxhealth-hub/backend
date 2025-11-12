@@ -5,4 +5,5 @@ Your appointment with {{ appointment.hospital.name }} for {{ appointment.special
 Date: {{ appointment.appointment_date }}
 Time: {{ appointment.appointment_time }}
 
-Thank you for using our service!
+Thank you for using Lifelynx,
+The Lifelynx Team

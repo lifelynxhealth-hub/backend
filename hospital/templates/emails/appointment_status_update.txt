@@ -1,0 +1,24 @@
+Hello {{ user.full_name }},
+
+We wanted to let you know that the status of your appointment with {{ appointment.hospital.name }} has been updated.
+
+Appointment Details:
+-------------------
+Specialty: {{ appointment.specialty }}
+Date: {{ appointment.appointment_date }}
+Time: {{ appointment.appointment_time }}
+Previous Status: {{ old_status|title }}
+Current Status: {{ new_status|title }}
+
+{% if new_status == 'confirmed' %}
+Please make sure to arrive on time and follow any pre-appointment instructions provided by the hospital.
+{% elif new_status == 'cancelled' %}
+We’re sorry, your appointment has been cancelled. You can reschedule via the Lifelynx app or contact the hospital directly.
+{% elif new_status == 'completed' %}
+Thank you for attending your appointment. You can view your appointment summary in the Lifelynx app.
+{% endif %}
+
+For any questions or concerns, please contact the hospital or reach out to Lifelynx support.
+
+Thank you for using Lifelynx,
+The Lifelynx Team

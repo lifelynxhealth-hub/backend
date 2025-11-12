@@ -1,10 +1,60 @@
 <!DOCTYPE html>
 <html>
-<body>
-  <p>Hi {{ user.full_name }},</p>
-  <p>Your appointment with {{ appointment.hospital.name }} for <strong>{{ appointment.specialty }}</strong> has been booked successfully.</p>
-  <p><strong>Date:</strong> {{ appointment.appointment_date }}<br>
-     <strong>Time:</strong> {{ appointment.appointment_time }}</p>
-  <p>Thank you for using our service!</p>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>Appointment Confirmation</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f6f9fc;
+        color: #333;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 500px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 8px;
+        padding: 30px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      }
+      h2 {
+        color: #007bff;
+      }
+      p {
+        line-height: 1.6;
+      }
+      .details {
+        background-color: #f1f5f9;
+        padding: 12px;
+        border-radius: 6px;
+        margin-top: 15px;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #777;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Hi {{ user.full_name }},</h2>
+      <p>
+        Your appointment with <strong>{{ appointment.hospital.name }}</strong> for <strong>{{ appointment.specialty }}</strong> has been booked successfully.
+      </p>
+
+      <div class="details">
+        <p><strong>Date:</strong> {{ appointment.appointment_date }}</p>
+        <p><strong>Time:</strong> {{ appointment.appointment_time }}</p>
+      </div>
+
+      <p>Thank you for using our service!</p>
+
+      <div class="footer">
+        <p>© {{ current_year|default:"2025" }} Lifelynx. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
 </html>

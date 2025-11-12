@@ -3,13 +3,15 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.exceptions import PermissionDenied
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 
-from .models import HealthProfile, HealthMetric, Appointment, ChatSession, HealthReport
+from .models import HealthProfile, HealthMetric, ChatSession, HealthReport
 from .serializers import HealthProfileSerializer, HealthMetricSerializer, AppointmentSerializer, NearbyHospitalSerializer, ChatSessionSummarySerializer
 from hospital.models import Hospital
 from core.pagination import StandardResultsSetPagination
 from core.utils import geocode_address, haversine_distance
-from core.models import Notification
+from core.models import Appointment, Notification
 
 # Create your views here.
 

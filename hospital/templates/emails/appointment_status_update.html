@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Appointment Status Update</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f6f9fc;
+        color: #333;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 500px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 8px;
+        padding: 30px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      }
+      h2 {
+        color: #007bff;
+      }
+      .status {
+        font-weight: bold;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #777;
+      }
+      .note {
+        background-color: #f1f5f9;
+        padding: 12px;
+        border-radius: 6px;
+        margin-top: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Hello {{ user.full_name }},</h2>
+      <p>
+        The status of your appointment with <strong>{{ appointment.hospital.name }}</strong> has been updated.
+      </p>
+
+      <div class="note">
+        <p><strong>Specialty:</strong> {{ appointment.specialty }}</p>
+        <p><strong>Date:</strong> {{ appointment.appointment_date }}</p>
+        <p><strong>Time:</strong> {{ appointment.appointment_time }}</p>
+        <p><strong>Previous Status:</strong> {{ old_status|title }}</p>
+        <p><strong>Current Status:</strong> <span class="status">{{ new_status|title }}</span></p>
+      </div>
+
+      {% if new_status == 'confirmed' %}
+        <p>Please arrive on time and follow any pre-appointment instructions provided by the hospital.</p>
+      {% elif new_status == 'cancelled' %}
+        <p>We’re sorry, your appointment has been cancelled. You can reschedule via the Lifelynx app or contact the hospital directly.</p>
+      {% elif new_status == 'completed' %}
+        <p>Thank you for attending your appointment. You can view your appointment summary in the Lifelynx app.</p>
+      {% endif %}
+
+      <div class="footer">
+        <p>For any questions, please contact the hospital or Lifelynx support.</p>
+        <p>© {{ current_year|default:"2025" }} Lifelynx. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,8 +1,6 @@
 from rest_framework import serializers
-from django.utils import timezone
-import datetime
 
-from .models import HealthProfile, HealthMetric, Appointment, ChatSession, HealthReport
+from .models import HealthProfile, HealthMetric, ChatSession
 from hospital.models import Hospital
 
 class HealthProfileSerializer(serializers.ModelSerializer):
@@ -32,7 +30,7 @@ class HealthProfileSerializer(serializers.ModelSerializer):
 class HealthMetricSerializer(serializers.ModelSerializer):
     class Meta:
         model = HealthMetric
-        exclude = ['user', 'updated_at']
+        exclude = ['user', 'created_at']
 
     def validate(self, data):
         systolic = data.get('systolic_bp')
@@ -48,26 +46,6 @@ class HealthMetricSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"heart_rate": "Invalid heart rate value."})
         if temperature and (temperature < 20 or temperature > 50):
             raise serializers.ValidationError({"temperature": "Invalid temperature value."})
-        return data
-
-class AppointmentSerializer(serializers.ModelSerializer):
-    hospital_name = serializers.ReadOnlyField(source='hospital.name')
-
-    class Meta:
-        model = Appointment
-        fields = [
-            'id', 'hospital', 'hospital_name', 'specialty', 'reason_for_visit',
-            'appointment_date', 'appointment_time', 'symptoms',
-            'additional_notes', 'status', 'created_at'
-        ]
-        read_only_fields = ['status', 'created_at']
-
-    def validate(self, data):
-        appointment_datetime = timezone.make_aware(
-            datetime.datetime.combine(data['appointment_date'], data['appointment_time'])
-        )
-        if appointment_datetime < timezone.now():
-            raise serializers.ValidationError("Appointment time cannot be in the past.")
         return data
 
 class NearbyHospitalSerializer(serializers.ModelSerializer):

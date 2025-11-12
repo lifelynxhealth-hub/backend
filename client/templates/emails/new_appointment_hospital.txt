@@ -4,3 +4,6 @@ Hi {{ appointment.hospital.name }},
 
 Date: {{ appointment.appointment_date }}
 Time: {{ appointment.appointment_time }}
+
+Thank you for using Lifelynx,
+The Lifelynx Team
