@@ -2,14 +2,19 @@ from rest_framework import serializers
 from django.utils import timezone
 import datetime
 
-from .models import HealthProfile, HealthMetric, Appointment
+from .models import HealthProfile, HealthMetric, Appointment, ChatSession, HealthReport
+from hospital.models import Hospital
 
 class HealthProfileSerializer(serializers.ModelSerializer):
+    full_name = serializers.CharField(source='user.full_name', read_only=True)
+    email = serializers.EmailField(source='user.email', read_only=True)
     bmi = serializers.SerializerMethodField(read_only=True)
+    google_maps_link = serializers.ReadOnlyField()
 
     class Meta:
         model = HealthProfile
         exclude = ['user', 'created_at', 'updated_at']
+        read_only_fields = ['google_maps_link']
 
     def get_bmi(self, obj):
         bmi = obj.calculate_bmi()
@@ -64,3 +69,32 @@ class AppointmentSerializer(serializers.ModelSerializer):
         if appointment_datetime < timezone.now():
             raise serializers.ValidationError("Appointment time cannot be in the past.")
         return data
+
+class NearbyHospitalSerializer(serializers.ModelSerializer):
+    distance_km = serializers.FloatField(read_only=True)
+    specialties = serializers.ListField(child=serializers.CharField(), read_only=True)
+    google_maps_link = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Hospital
+        fields = ['id', 'name', 'address', 'city', 'state', 'specialties', 'google_maps_link', 'distance_km']
+
+class ChatSessionSummarySerializer(serializers.ModelSerializer):
+    symptoms_reported = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ChatSession
+        fields = [
+            "id",
+            "title",
+            "started_at",
+            "last_activity",
+            "is_active",
+            "symptoms_reported",
+        ]
+
+    def get_symptoms_reported(self, obj):
+        report = getattr(obj, "report", None)
+        if report and report.exists():
+            return report.first().symptoms_reported
+        return None

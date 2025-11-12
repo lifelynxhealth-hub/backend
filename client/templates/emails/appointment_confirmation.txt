@@ -1,0 +1,8 @@
+Hi {{ user.full_name }},
+
+Your appointment with {{ appointment.hospital.name }} for {{ appointment.specialty }} has been booked successfully.
+
+Date: {{ appointment.appointment_date }}
+Time: {{ appointment.appointment_time }}
+
+Thank you for using our service!

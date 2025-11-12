@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework.response import Response
-from rest_framework import status, generics
+from rest_framework import status, generics, permissions
 from rest_framework.views import APIView
 from .serializers import RegisterSerializer, LoginSerializer, ForgotPasswordSerializer, ResetPasswordSerializer
 from .models import User
@@ -97,3 +97,15 @@ class ResetPasswordView(APIView):
             {"message": "Password reset successful! You can now log in."},
             status=status.HTTP_200_OK,
         )
+
+class LogoutView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({"message": "Logout successful."}, status=status.HTTP_205_RESET_CONTENT)
+        except Exception:
+            return Response({"error": "Invalid token or already blacklisted."}, status=status.HTTP_400_BAD_REQUEST)

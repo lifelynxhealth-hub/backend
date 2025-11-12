@@ -5,6 +5,7 @@ from rest_framework.exceptions import PermissionDenied
 
 from .models import Hospital
 from .serializers import HospitalSerializer
+from core.utils import geocode_address
 
 # Create your views here.
 
@@ -21,7 +22,32 @@ class HospitalProfileView(generics.RetrieveUpdateAPIView):
         return hospital
 
     def perform_update(self, serializer):
-        serializer.save(owner=self.request.user)
+        instance = serializer.instance
+        address = serializer.validated_data.get('address', instance.address)
+        city = serializer.validated_data.get('city', instance.city)
+        state = serializer.validated_data.get('state', instance.state)
+        
+        if (address != instance.address or city != instance.city or state != instance.state) and address and city and state:
+            lat, lng = geocode_address(address, city, state)
+            if (lat, lng):
+                serializer.save(owner=self.request.user,
+                                latitude=lat,
+                                longitude=lng)
+            else:
+                serializer.save(owner=self.request.user)
+        else:
+            serializer.save(owner=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        address = serializer.validated_data.get('address')
+        city = serializer.validated_data.get('city')
+        state = serializer.validated_data.get('state')
+        latitude = longitude = None
+
+        if address and city and state:
+            lat, lng = geocode_address(address, city, state)
+            if (lat, lng):
+                latitude = lat
+                longitude =lng
+
+        serializer.save(owner=self.request.user, latitude=latitude, longitude=longitude)

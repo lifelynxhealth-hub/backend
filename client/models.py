@@ -26,8 +26,21 @@ class HealthProfile(models.Model):
     surgical_history = models.TextField(blank=True)
     family_history = models.TextField(blank=True)
     lifestyle = models.TextField(blank=True, help_text="Optional notes like diet, exercise habits, smoking, etc.")
+    
+    address = models.TextField(blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    state = models.CharField(max_length=100, blank=True, null=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    @property
+    def google_maps_link(self):
+        if self.latitude and self.longitude:
+            return f"https://www.google.com/maps?q={self.latitude},{self.longitude}"
+        return None
 
     def calculate_bmi(self):
         if self.height and self.weight and self.height > 0:
@@ -143,3 +156,25 @@ class ChatMessage(models.Model):
 
     def __str__(self):
         return f"{self.sender.capitalize()} Message ({self.created_at.strftime('%H:%M:%S')})"
+
+class HealthReport(models.Model):
+    session = models.ForeignKey(
+        ChatSession,
+        on_delete=models.CASCADE,
+        related_name="report"
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="health_reports")
+    
+    generated_at = models.DateTimeField(auto_now_add=True)
+    symptoms_reported = models.TextField(blank=True)
+    duration = models.CharField(max_length=100, blank=True)
+    severity = models.CharField(max_length=50, blank=True)
+    
+    ai_analysis = models.TextField(blank=True)
+    recommendations = models.TextField(blank=True)
+    
+    vital_signs = models.JSONField(default=dict, blank=True)
+    medical_history_summary = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"Health Report - {self.user.full_name} ({self.generated_at.strftime('%Y-%m-%d %H:%M')})"

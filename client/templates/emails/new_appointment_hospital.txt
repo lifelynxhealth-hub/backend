@@ -1,0 +1,6 @@
+Hi {{ appointment.hospital.name }},
+
+{{ user.full_name }} has booked an appointment for {{ appointment.specialty }}.
+
+Date: {{ appointment.appointment_date }}
+Time: {{ appointment.appointment_time }}
