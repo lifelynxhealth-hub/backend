@@ -7,8 +7,9 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
 from .models import HealthProfile, HealthMetric, ChatSession, HealthReport
-from .serializers import HealthProfileSerializer, HealthMetricSerializer, AppointmentSerializer, NearbyHospitalSerializer, ChatSessionSummarySerializer
+from .serializers import HealthProfileSerializer, HealthMetricSerializer, NearbyHospitalSerializer, ChatSessionSummarySerializer
 from hospital.models import Hospital
+from core.serializers import AppointmentSerializer
 from core.pagination import StandardResultsSetPagination
 from core.utils import geocode_address, haversine_distance
 from core.models import Appointment, Notification
