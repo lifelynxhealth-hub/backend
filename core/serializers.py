@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.utils import timezone
 import datetime
-
+from client.models import ChatSession, ChatMessage
 from .models import Appointment, Notification
 
 class AppointmentSerializer(serializers.ModelSerializer):
@@ -41,3 +41,34 @@ class HospitalAppointmentSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['created_at', 'patient', 'specialty', 'reason_for_visit',
                             'appointment_date', 'appointment_time', 'symptoms', 'additional_notes']
+
+class ChatMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ChatMessage
+        fields = ['id', 'sender', 'message', 'created_at']
+
+class ChatSessionSerializer(serializers.ModelSerializer):
+    messages = ChatMessageSerializer(many=True, read_only=True)
+    message_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = ChatSession
+        fields = ['id', 'title', 'started_at', 'last_activity', 'is_active', 'messages', 'message_count']
+    
+    def get_message_count(self, obj):
+        return obj.messages.count()
+
+class ChatSessionListSerializer(serializers.ModelSerializer):
+    last_message = serializers.SerializerMethodField()
+    message_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = ChatSession
+        fields = ['id', 'title', 'started_at', 'last_activity', 'is_active', 'last_message', 'message_count']
+    
+    def get_last_message(self, obj):
+        last_msg = obj.messages.last()
+        return last_msg.message if last_msg else None
+    
+    def get_message_count(self, obj):
+        return obj.messages.count()

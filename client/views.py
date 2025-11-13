@@ -16,6 +16,10 @@ from core.models import Appointment, Notification
 
 # Create your views here.
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 class HealthProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = HealthProfileSerializer
     permission_classes = [permissions.IsAuthenticated]

@@ -130,3 +130,47 @@ class HealthReport(models.Model):
 
     def __str__(self):
         return f"Health Report - {self.user.full_name} ({self.generated_at.strftime('%Y-%m-%d %H:%M')})"
+
+class PHC(models.Model):
+    name = models.CharField(max_length=200)
+    address = models.TextField()
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    phone_number = models.CharField(max_length=15)
+    is_active = models.BooleanField(default=True)
+
+class DrugInventory(models.Model):
+    phc = models.ForeignKey(PHC, on_delete=models.CASCADE, related_name='inventory')
+    drug_name = models.CharField(max_length=100)
+    quantity = models.IntegerField(default=0)
+    last_updated = models.DateTimeField(auto_now=True)
+
+class OkadaBooking(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('arrived', 'Arrived'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    chat_session = models.ForeignKey(ChatSession, on_delete=models.SET_NULL, null=True, blank=True)
+    phc = models.ForeignKey(PHC, on_delete=models.CASCADE)
+    driver_name = models.CharField(max_length=100)
+    driver_phone = models.CharField(max_length=15)
+    vehicle_plate = models.CharField(max_length=20)
+    fare = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    estimated_arrival = models.IntegerField(help_text="Estimated arrival in minutes")
+
+class EmergencyAlert(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    chat_session = models.ForeignKey(ChatSession, on_delete=models.SET_NULL, null=True, blank=True)
+    health_record = models.ForeignKey(HealthProfile, on_delete=models.CASCADE)
+    location_lat = models.FloatField()
+    location_lng = models.FloatField()
+    emergency_services_contacted = models.BooleanField(default=False)
+    family_notified = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
