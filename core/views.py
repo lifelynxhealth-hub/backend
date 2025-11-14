@@ -10,6 +10,7 @@ from .models import *
 from .serializers import *
 from ai.chatbot_simple import LifelynxAISimple
 import logging
+from client.models import HealthProfile
 
 logger = logging.getLogger(__name__)
 
@@ -184,7 +185,7 @@ class QuickChatView(APIView):
             
             # Create health record if symptoms detected
             if result['symptoms_detected']:
-                HealthRecord.objects.create(
+                HealthProfile.objects.create(
                     user=user,
                     symptoms=', '.join(result['symptoms_detected']),
                     diagnosis=', '.join([d['disease'] for d in result['diagnosis']]),
